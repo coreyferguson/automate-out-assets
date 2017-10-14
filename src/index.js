@@ -16,8 +16,8 @@ const bucketName = `automate-out-assets.overattribution.com`;
 
 // high level execution
 createBucket().then(() => {
-//   return applyWebsiteHosting();
-// }).then(() => {
+  return applyWebsiteHosting();
+}).then(() => {
   return applyPolicy();
 }).then(() => {
   return uploadDist();
@@ -31,6 +31,7 @@ createBucket().then(() => {
 // chunks of work ...
 
 function createBucket() {
+  console.log('creating bucket');
   return new Promise((resolve, reject) => {
     s3.createBucket({
       Bucket: bucketName
@@ -44,29 +45,31 @@ function createBucket() {
   });
 }
 
-// function applyWebsiteHosting() {
-//   return new Promise((resolve, reject) => {
-//     s3.putBucketWebsite({
-//       Bucket: bucketName,
-//       WebsiteConfiguration: {
-//         ErrorDocument: {
-//           Key: 'error.html'
-//         },
-//         IndexDocument: {
-//           Suffix: 'index.html'
-//         }
-//       }
-//     }, (err, data) => {
-//       if (err) reject(err);
-//       else {
-//         console.log('website hosting applied');
-//         resolve(data);
-//       }
-//     });
-//   });
-// }
+function applyWebsiteHosting() {
+  console.log('applying static website hosting');
+  return new Promise((resolve, reject) => {
+    s3.putBucketWebsite({
+      Bucket: bucketName,
+      WebsiteConfiguration: {
+        ErrorDocument: {
+          Key: 'error.html'
+        },
+        IndexDocument: {
+          Suffix: 'index.html'
+        }
+      }
+    }, (err, data) => {
+      if (err) reject(err);
+      else {
+        console.log('website hosting applied');
+        resolve(data);
+      }
+    });
+  });
+}
 
 function applyPolicy() {
+  console.log('applying policy');
   return new Promise((resolve, reject) => {
     s3.putBucketPolicy({
       Bucket: bucketName,
